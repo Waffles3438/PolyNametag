@@ -14,7 +14,7 @@ import org.polyfrost.polyui.color.rgba
 object PolyNametagConfig : Config("nametag.json", "/polynametag.svg", PolyNametag.NAME, Category.QOL) {
 
     @Switch(title = "Enabled")
-    var enabled = false
+    var enabled = true
 
     @Slider(title = "Height offset", min = -0.5f, max = 0.5f, description = "How much to offset the nametag vertically")
     var heightOffset = 0f
