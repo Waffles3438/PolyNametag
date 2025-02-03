@@ -6,94 +6,93 @@ import gg.essential.connectionmanager.common.enums.ProfileStatus
 import gg.essential.data.OnboardingData
 import gg.essential.handlers.OnlineIndicator
 import gg.essential.universal.UMatrixStack
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.client.renderer.entity.Render
-import net.minecraft.client.renderer.entity.RendererLivingEntity
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import org.lwjgl.opengl.GL11
 import org.polyfrost.oneconfig.utils.v1.dsl.mc
 import org.polyfrost.polynametag.PolyNametag.drawingIndicator
-import org.polyfrost.polynametag.mixin.MinecraftAccessor
-import org.polyfrost.polynametag.mixin.RenderAccessor
+import org.polyfrost.polynametag.mixin.Accessor_FontRenderer_DrawString
+import org.polyfrost.polyui.unit.Vec2
+import org.polyfrost.universal.UGraphics
+import kotlin.math.cos
+import kotlin.math.sin
 
 object NametagRenderer {
 
-    interface NametagItem {
+    private val points = arrayOf(Vec2(1f, 1f), Vec2(1f, -1f), Vec2(-1f, -1f), Vec2(-1f, 1f))
+    private val translate = arrayOf(Vec2(1f, 0f), Vec2(0f, -1f), Vec2(-1f, 0f), Vec2(0f, 1f))
 
-        val entity: Entity
+    @JvmStatic
+    fun drawStringWithoutZFighting(fontRenderer: FontRenderer, text: String, x: Float, y: Float, color: Int): Int {
+        if (fontRenderer !is Accessor_FontRenderer_DrawString) {
+            return 0
+        }
 
+        UGraphics.GL.pushMatrix()
+        UGraphics.GL.translate(0f, 0f, -0.01f)
+        return when (PolyNametagConfig.textType) {
+            0 -> fontRenderer.invokeRenderString(text, x, y, color, false)
+            1 -> fontRenderer.invokeRenderString(text, x, y, color, true)
+            else -> 0
+        }.apply {
+            UGraphics.GL.popMatrix()
+        }
     }
 
-    data class LabelItem(val instance: Render<Entity>, override val entity: Entity, val str: String, val x: Double, val y: Double, val z: Double, val maxDistance: Int): NametagItem
-
-    data class NameItem(val instance: RendererLivingEntity<EntityLivingBase>, override val entity: EntityLivingBase, val x: Double, val y: Double, val z: Double): NametagItem
+    @JvmStatic
+    fun drawStringWithoutZFighting(text: String, x: Float, y: Float, color: Int): Int {
+        return drawStringWithoutZFighting(mc.fontRendererObj, text, x, y, color)
+    }
 
     @JvmStatic
-    val nametags = mutableListOf<NametagItem>()
-
-    @JvmStatic
-    var isCurrentlyDrawingWorld = false
-
-    @JvmStatic
-    var isCurrentlyDrawingInventory = false
-
-    @JvmStatic
-    var isCurrentlyDrawingPlayerName = false
-
-    @JvmStatic
-    var isDrawingIndicator = false
-
-    @JvmStatic
-    var isCurrentlyDrawingTags = false
-        private set
-
-    @JvmStatic
-    fun renderAll() {
-        if (nametags.isEmpty()) {
+    fun drawBackground(x1: Double, x2: Double, entity: Entity) {
+        if (!PolyNametagConfig.background) {
             return
         }
 
-        GlStateManager.pushMatrix()
-        isCurrentlyDrawingTags = true
-        mc.entityRenderer.enableLightmap()
-        val partialTicks = (mc as MinecraftAccessor).timer.renderPartialTicks
-        for (nametag in nametags) {
-            val brightness = if (nametag.entity.isBurning) 15728880 else nametag.entity.getBrightnessForRender(partialTicks)
-            val x = brightness % 65536
-            val y = brightness / 65536
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        UGraphics.disableTexture2D()
+        GL11.glPushMatrix()
+        val realX1 = x1 - if (canDrawEssentialIndicator(entity)) 10 else 0
+        GL11.glTranslated((realX1 + x2) / 2f, 3.5, 0.01)
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN)
+        with(PolyNametagConfig.backgroundColor) {
+            GL11.glColor4f(r / 255f, g / 255f, b / 255f, a.coerceAtMost(63) / 255f)
+        }
 
-            OpenGlHelper.setLightmapTextureCoords(
-                OpenGlHelper.lightmapTexUnit,
-                x.toFloat() / 1.0f,
-                y.toFloat() / 1.0f
-            )
-
-            when (nametag) {
-                is LabelItem -> {
-                    @Suppress("UNCHECKED_CAST")
-                    (nametag.instance as RenderAccessor<Entity>).renderNametag(
-                        nametag.entity,
-                        nametag.str,
-                        nametag.x,
-                        nametag.y,
-                        nametag.z,
-                        nametag.maxDistance
-                    )
+        val halfWidth = (x2 - realX1) / 2f + PolyNametagConfig.paddingX
+        val radius = if (PolyNametagConfig.rounded) PolyNametagConfig.cornerRadius.coerceAtMost(4.5f + PolyNametagConfig.paddingY).coerceAtMost(halfWidth.toFloat()) else 0f
+        val width = halfWidth - radius
+        val distanceFromPlayer = entity.getDistanceToEntity(mc.thePlayer)
+        val quality = ((distanceFromPlayer * 4 + 10).coerceAtMost(350f) / 4f).toInt()
+        for (a in 0..3) {
+            val (transX, transY) = translate[a]
+            val (pointX, pointY) = points[a]
+            val x = pointX * width
+            val y = pointY * (4.5 + PolyNametagConfig.paddingY - radius)
+            if (PolyNametagConfig.rounded) {
+                for (b in 0 until 90 / quality) {
+                    val angle = Math.toRadians((a * 90 + b * quality).toDouble())
+                    GL11.glVertex2d(x + sin(angle) * radius, y + cos(angle) * radius)
                 }
-
-                is NameItem -> {
-                    @Suppress("UNCHECKED_CAST")
-                    nametag.instance.renderName(nametag.entity, nametag.x, nametag.y, nametag.z)
-                }
+            } else {
+                GL11.glVertex2d(x, y)
             }
         }
 
-        nametags.clear()
-        isCurrentlyDrawingTags = false
-        mc.entityRenderer.disableLightmap()
-        GlStateManager.popMatrix()
+        GL11.glEnd()
+        GL11.glPopMatrix()
+        UGraphics.enableTexture2D()
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+    }
+
+    @JvmStatic
+    fun drawBackground(entity: Entity) {
+        val halfWidth = mc.fontRendererObj.getStringWidth(entity.displayName.formattedText) / 2 + 1.0
+        drawBackground(-halfWidth, halfWidth, entity)
     }
 
     @JvmStatic

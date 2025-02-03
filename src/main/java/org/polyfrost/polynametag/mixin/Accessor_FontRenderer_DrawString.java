@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(FontRenderer.class)
-public interface FontRendererAccessor {
+public interface Accessor_FontRenderer_DrawString {
 
     @Invoker
     void invokeResetStyles();

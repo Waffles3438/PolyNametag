@@ -7,19 +7,14 @@
     "maxShiftBy": 5
   },
   "client": [
-    "EntityRendererMixin",
-    "FontRendererAccessor",
-    "FontRendererMixin",
-    "GuiInventoryMixin",
-    "MinecraftAccessor",
-    "RenderAccessor",
-    "RendererLivingEntityMixin",
-    "RenderMixin",
-    "RenderPlayerMixin",
-    "essential.OnlineIndicatorMixin",
-    "levelhead.AboveHeadRenderMixin",
-    "levelhead.AboveHeadRenderMixin_ModifyArgs",
-    "patcher.NameTagRenderingHooksMixin"
+      "essential.Mixin_OnlineIndicator_EssentialIndicatorCompatibility",
+      "levelhead.Mixin_AboveHeadRender_FixLevelheadRendering",
+      "levelhead.Mixin_AboveHeadRender_UseCustomConfigArgs",
+      "patcher.Mixin_NameTagRenderingHooks_OverwriteNametagTextRendering",
+      "Accessor_FontRenderer_DrawString",
+      "Mixin_Render_ReplaceRendering",
+      "Mixin_RendererLivingEntity_EnableSelfNametag",
+      "Mixin_RendererLivingEntity_ReplaceRendering"
   ],
   "verbose": true
 }

@@ -1,8 +1,8 @@
 package org.polyfrost.polynametag.mixin.patcher;
 
 import net.minecraft.client.gui.FontRenderer;
+import org.polyfrost.polynametag.NametagRenderer;
 import org.polyfrost.polynametag.PolyNametagConfig;
-import org.polyfrost.polynametag.render.NametagRenderingKt;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
 @Mixin(targets = "club.sk1er.patcher.hooks.NameTagRenderingHooks")
-public abstract class NameTagRenderingHooksMixin {
+public abstract class Mixin_NameTagRenderingHooks_OverwriteNametagTextRendering {
 
     @Dynamic("Patcher")
     @Inject(
@@ -26,6 +26,7 @@ public abstract class NameTagRenderingHooksMixin {
             return;
         }
 
-        cir.setReturnValue(NametagRenderingKt.drawStringWithoutZFighting(fontRenderer, text, x, y, color));
+        cir.setReturnValue(NametagRenderer.drawStringWithoutZFighting(fontRenderer, text, x, y, color));
     }
+
 }
