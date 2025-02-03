@@ -26,7 +26,7 @@ public abstract class Mixin_NameTagRenderingHooks_OverwriteNametagTextRendering 
             return;
         }
 
-        cir.setReturnValue(NametagRenderer.drawStringWithoutZFighting(fontRenderer, text, x, y, color));
+        cir.setReturnValue(NametagRenderer.drawNametagString(fontRenderer, text, x, y, color));
     }
 
 }

@@ -21,7 +21,7 @@ object PolyNametagConfig : Config("nametag.json", "/polynametag.svg", PolyNameta
         get() = field.coerceIn(-0.5f, 0.5f)
 
     @Slider(title = "Scale", min = 0f, max = 1f, description = "How much to scale the nametag")
-    var scale = 1f
+    var scale = 1f //todo
         get() = field.coerceIn(0f, 1f)
 
     @Switch(title = "Rounded Corners")
@@ -29,15 +29,12 @@ object PolyNametagConfig : Config("nametag.json", "/polynametag.svg", PolyNameta
 
     @Slider(title = "Corner Radius", min = 0f, max = 10f)
     var cornerRadius = 0f
-        get() = field.coerceIn(0f, 10f)
 
     @Slider(title = "Padding X", min = 0f, max = 10f)
     var paddingX = 0f
-        get() = field.coerceIn(0f, 10f)
 
     @Slider(title = "Padding Y", min = 0f, max = 10f)
     var paddingY = 0f
-        get() = field.coerceIn(0f, 10f)
 
     @Dropdown(title = "Text Type", options = ["No Shadow", "Shadow", "Full Shadow"], description = "The type of shadow to render")
     var textType = 0
@@ -61,9 +58,6 @@ object PolyNametagConfig : Config("nametag.json", "/polynametag.svg", PolyNameta
 
     @Color(title = "Background color", description = "The color of the background")
     var backgroundColor = rgba(0, 0, 0, 0.247F) // 0,0,0,63
-
-    @Switch(title = "Offset Essential Indicator", description = "Offset nametag to center if the player has essential indicator drawn")
-    var essentialOffset = true
 
     /*
     @CustomOption
@@ -91,9 +85,6 @@ object PolyNametagConfig : Config("nametag.json", "/polynametag.svg", PolyNameta
         }
         addDependency("cornerRadius", "rounded")
         addDependency("showInInventory", "showOwnNametag")
-
-        // TODO
-        //hideIf("essentialOffset") { !PolyNametag.isEssential }
 
         if (!hasMigratedPatcher) {
             try {

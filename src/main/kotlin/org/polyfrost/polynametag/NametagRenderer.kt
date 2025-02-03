@@ -22,14 +22,13 @@ object NametagRenderer {
     private val essentialBSManager = EssentialBSManager()
 
     @JvmStatic
-    fun drawStringWithoutZFighting(fontRenderer: FontRenderer, text: String, x: Float, y: Float, color: Int): Int {
+    fun drawNametagString(fontRenderer: FontRenderer, text: String, x: Float, y: Float, color: Int): Int {
         if (fontRenderer !is Accessor_FontRenderer_DrawString) {
             return 0
         }
 
         UGraphics.GL.pushMatrix()
-        UGraphics.GL.translate(0f, 0f, -0.01f)
-        return when (PolyNametagConfig.textType) {
+        return when (PolyNametagConfig.textType) { //TODO FULL SHADOW
             0 -> fontRenderer.invokeRenderString(text, x, y, color, false)
             1 -> fontRenderer.invokeRenderString(text, x, y, color, true)
             else -> 0
@@ -39,8 +38,8 @@ object NametagRenderer {
     }
 
     @JvmStatic
-    fun drawStringWithoutZFighting(text: String, x: Float, y: Float, color: Int): Int {
-        return drawStringWithoutZFighting(mc.fontRendererObj, text, x, y, color)
+    fun drawNametagString(text: String, x: Float, y: Float, color: Int): Int {
+        return drawNametagString(mc.fontRendererObj, text, x, y, color)
     }
 
     @JvmStatic
@@ -53,14 +52,14 @@ object NametagRenderer {
         UGraphics.disableTexture2D()
         GL11.glPushMatrix()
         val realX1 = x1 - if (canDrawEssentialIndicator(entity)) 10 else 0
-        GL11.glTranslated((realX1 + x2) / 2f, 3.5, 0.01)
+        GL11.glTranslated((realX1 + x2) / 2f, 3.5, 0.0)
         GL11.glBegin(GL11.GL_TRIANGLE_FAN)
         with(PolyNametagConfig.backgroundColor) {
             GL11.glColor4f(r / 255f, g / 255f, b / 255f, a.coerceAtMost(63) / 255f)
         }
 
-        val halfWidth = (x2 - realX1) / 2f + PolyNametagConfig.paddingX
-        val radius = if (PolyNametagConfig.rounded) PolyNametagConfig.cornerRadius.coerceAtMost(4.5f + PolyNametagConfig.paddingY).coerceAtMost(halfWidth.toFloat()) else 0f
+        val halfWidth = (x2 - realX1) / 2f + PolyNametagConfig.paddingX.coerceIn(0f, 10f)
+        val radius = if (PolyNametagConfig.rounded) PolyNametagConfig.cornerRadius.coerceIn(0f, 10f).coerceAtMost(4.5f + PolyNametagConfig.paddingY.coerceIn(0f, 10f)).coerceAtMost(halfWidth.toFloat()) else 0f
         val width = halfWidth - radius
         val distanceFromPlayer = entity.getDistanceToEntity(mc.thePlayer)
         val quality = ((distanceFromPlayer * 4 + 10).coerceAtMost(350f) / 4f).toInt()
@@ -68,7 +67,7 @@ object NametagRenderer {
             val (transX, transY) = translate[a]
             val (pointX, pointY) = points[a]
             val x = pointX * width
-            val y = pointY * (4.5 + PolyNametagConfig.paddingY - radius)
+            val y = pointY * (4.5 + PolyNametagConfig.paddingY.coerceIn(0f, 10f) - radius)
             if (PolyNametagConfig.rounded) {
                 for (b in 0 until 90 / quality) {
                     val angle = Math.toRadians((a * 90 + b * quality).toDouble())

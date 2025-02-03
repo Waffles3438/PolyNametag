@@ -13,11 +13,9 @@ import net.minecraft.entity.EntityLivingBase;
 import org.polyfrost.polynametag.NametagRenderer;
 import org.polyfrost.polynametag.PolyNametagConfig;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(RendererLivingEntity.class)
 public class Mixin_RendererLivingEntity_ReplaceRendering<T extends EntityLivingBase> {
@@ -28,7 +26,7 @@ public class Mixin_RendererLivingEntity_ReplaceRendering<T extends EntityLivingB
             return original.call(instance, text, x, y, color);
         }
 
-        return NametagRenderer.drawStringWithoutZFighting(instance, text, x, y, color);
+        return NametagRenderer.drawNametagString(instance, text, x, y, color);
     }
 
     @Inject(method = "renderName(Lnet/minecraft/entity/EntityLivingBase;DDD)V", at = @At("HEAD"), cancellable = true)
@@ -36,6 +34,18 @@ public class Mixin_RendererLivingEntity_ReplaceRendering<T extends EntityLivingB
         if (PolyNametagConfig.INSTANCE.getEnabled() && !PolyNametagConfig.INSTANCE.getShowInInventory() && Minecraft.getMinecraft().currentScreen instanceof GuiInventory) {
             ci.cancel();
         }
+    }
+
+    @ModifyArgs(method = "renderName(Lnet/minecraft/entity/EntityLivingBase;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;scale(FFF)V"))
+    private void polyNametag$changeScale(Args args) {
+        if (!PolyNametagConfig.INSTANCE.getEnabled()) {
+            return;
+        }
+
+        double scale = PolyNametagConfig.INSTANCE.getScale();
+        args.set(0, ((double) args.get(0)) * scale);
+        args.set(1, ((double) args.get(1)) * scale);
+        args.set(2, ((double) args.get(2)) * scale);
     }
 
     @Inject(method = "renderName(Lnet/minecraft/entity/EntityLivingBase;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/Tessellator;draw()V"))

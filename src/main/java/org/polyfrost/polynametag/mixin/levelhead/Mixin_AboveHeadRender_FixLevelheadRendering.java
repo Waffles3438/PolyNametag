@@ -34,7 +34,7 @@ public abstract class Mixin_AboveHeadRender_FixLevelheadRendering {
             return original.call(instance);
         }
 
-        return NametagRenderer.drawStringWithoutZFighting(text, x, y, color);
+        return NametagRenderer.drawNametagString(text, x, y, color);
     }
 
     @Dynamic("Levelhead")
