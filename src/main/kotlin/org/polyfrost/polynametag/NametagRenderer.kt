@@ -1,10 +1,5 @@
 package org.polyfrost.polynametag
 
-import gg.essential.Essential
-import gg.essential.config.EssentialConfig
-import gg.essential.connectionmanager.common.enums.ProfileStatus
-import gg.essential.data.OnboardingData
-import gg.essential.handlers.OnlineIndicator
 import gg.essential.universal.UMatrixStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
@@ -95,30 +90,16 @@ object NametagRenderer {
         drawBackground(-halfWidth, halfWidth, entity)
     }
 
-    @JvmStatic
-    fun drawEssentialIndicator(entity: Entity, string: String) {
-        if (entity !is EntityPlayer) {
-            return
-        }
-
-        drawingIndicator = true
-        OnlineIndicator.drawNametagIndicator(UMatrixStack(), entity, string, 0)
-        drawingIndicator = false
+    fun drawIndicator(entity: Entity, string: String, light: Int) {
+        if (entity !is AbstractClientPlayer) return
+        isDrawingIndicator = true
+        essentialBSManager.drawIndicator(UMatrixStack(), entity, string, light)
+        isDrawingIndicator = false
     }
 
     @JvmStatic
     fun canDrawEssentialIndicator(entity: Entity): Boolean {
-        if (!PolyNametag.isEssential) {
-            return false
-        }
-
-        if (OnboardingData.hasAcceptedTos() && EssentialConfig.showEssentialIndicatorOnNametag && entity is EntityPlayer) {
-            if (Essential.getInstance().connectionManager.profileManager.getStatus(entity.gameProfile.id) != ProfileStatus.OFFLINE) {
-                return true
-            }
-        }
-
-        return false
+        return essentialBSManager.canDrawIndicator(entity)
     }
 
 }

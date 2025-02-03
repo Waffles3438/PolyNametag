@@ -1,8 +1,7 @@
 package org.polyfrost.polynametag.mixin.essential;
 
 import gg.essential.universal.UMatrixStack;
-import net.minecraft.entity.Entity;
-import org.polyfrost.polynametag.PolyNametag;
+import org.polyfrost.polynametag.NametagRenderer;
 import org.polyfrost.polynametag.PolyNametagConfig;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +18,7 @@ public class Mixin_OnlineIndicator_EssentialIndicatorCompatibility {
 
     @Dynamic("Essential")
     @ModifyArgs(
-        method = "drawNametagIndicator(Lgg/essential/universal/UMatrixStack;Lnet/minecraft/entity/Entity;Ljava/lang/String;I)V",
+        method = "drawNametagIndicator",
         at = @At(
             remap = false,
             value = "INVOKE",
