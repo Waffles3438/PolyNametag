@@ -3,6 +3,7 @@ package org.polyfrost.polynametag.mixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
@@ -21,15 +22,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class RendererLivingEntityMixin  {
 
     @Unique
-    private boolean shouldShowOwnNametag;
+    private boolean polyNametag$shouldShowOwnNametag;
 
     @Redirect(
             method = "canRenderName(Lnet/minecraft/entity/EntityLivingBase;)Z",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isGuiEnabled()Z")
     )
     private boolean gui() {
-        shouldShowOwnNametag = ((PolyNametagConfig.INSTANCE.getEnabled() && PolyNametagConfig.INSTANCE.getShowOwnNametag() && (PolyNametagConfig.INSTANCE.getShowInInventory() || !NametagRenderer.isCurrentlyDrawingInventory()) && (!NametagRenderer.isCurrentlyDrawingWorld() || Minecraft.getMinecraft().gameSettings.thirdPersonView != 0))); //|| PolyNametagConfig.INSTANCE.getNametagPreview().getDrawing());
-        return shouldShowOwnNametag || Minecraft.isGuiEnabled();
+        polyNametag$shouldShowOwnNametag = ((PolyNametagConfig.INSTANCE.getEnabled() && PolyNametagConfig.INSTANCE.getShowOwnNametag() && (PolyNametagConfig.INSTANCE.getShowInInventory() || !NametagRenderer.isCurrentlyDrawingInventory()) && (!NametagRenderer.isCurrentlyDrawingWorld() || Minecraft.getMinecraft().gameSettings.thirdPersonView != 0))); //|| PolyNametagConfig.INSTANCE.getNametagPreview().getDrawing());
+        return polyNametag$shouldShowOwnNametag || Minecraft.isGuiEnabled();
     }
 
     @Redirect(
@@ -40,7 +41,7 @@ public abstract class RendererLivingEntityMixin  {
         )
     )
     private Entity polyNametag$cancelSelfCheck(RenderManager renderManager) {
-        return shouldShowOwnNametag ? null : renderManager.livingPlayer;
+        return polyNametag$shouldShowOwnNametag ? null : renderManager.livingPlayer;
     }
 
     @ModifyArg(
@@ -143,9 +144,8 @@ public abstract class RendererLivingEntityMixin  {
             return;
         }
 
-        PolyNametag instance = PolyNametag.INSTANCE;
-        if (instance.isEssential() && NametagRenderer.isDrawingIndicator()) {
-            NametagRenderer.drawEssentialIndicator(entity, entity.getDisplayName().getFormattedText());
+        if (PolyNametag.INSTANCE.isEssential() && NametagRenderer.isDrawingIndicator()) {
+            NametagRenderer.INSTANCE.drawIndicator(entity, entity.getDisplayName().getFormattedText(), (((int) OpenGlHelper.lastBrightnessY) << 16) + (int) OpenGlHelper.lastBrightnessX);
             NametagRenderer.setDrawingIndicator(false);
         }
     }

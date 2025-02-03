@@ -1,21 +1,13 @@
 package org.polyfrost.polynametag.render
 
 import club.sk1er.patcher.config.PatcherConfig
-import gg.essential.Essential
-import gg.essential.config.EssentialConfig
-import gg.essential.connectionmanager.common.enums.ProfileStatus
-import gg.essential.data.OnboardingData
-import gg.essential.handlers.OnlineIndicator
-import gg.essential.universal.UMatrixStack
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
+import org.polyfrost.oneconfig.utils.v1.dsl.mc
 import org.polyfrost.polynametag.NametagRenderer
 import org.polyfrost.polynametag.PolyNametag
-import org.polyfrost.polynametag.PolyNametag.drawingIndicator
 import org.polyfrost.polynametag.PolyNametagConfig
 import org.polyfrost.polynametag.mixin.FontRendererAccessor
 import kotlin.math.cos
@@ -24,8 +16,6 @@ import kotlin.math.sin
 var drawingText = false
 
 var drawingWithDepth = false
-
-private val mc by lazy { Minecraft.getMinecraft() }
 
 internal fun shouldDrawBackground() =
     PolyNametagConfig.background && (!PolyNametag.isPatcher || !PatcherConfig.disableNametagBoxes)

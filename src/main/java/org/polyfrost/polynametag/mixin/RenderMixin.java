@@ -3,6 +3,7 @@ package org.polyfrost.polynametag.mixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
@@ -138,9 +139,8 @@ public abstract class RenderMixin {
     @Inject(method = "renderLivingLabel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;enableLighting()V"))
     private void essential(Entity entityIn, String str, double x, double y, double z, int maxDistance, CallbackInfo ci) {
         if (!PolyNametagConfig.INSTANCE.getEnabled()) return;
-        PolyNametag instance = PolyNametag.INSTANCE;
-        if (instance.isEssential() && NametagRenderer.isDrawingIndicator()) {
-            NametagRenderer.drawEssentialIndicator(entityIn, str);
+        if (PolyNametag.INSTANCE.isEssential() && NametagRenderer.isDrawingIndicator()) {
+            NametagRenderer.INSTANCE.drawIndicator(entityIn, str, (((int) OpenGlHelper.lastBrightnessY) << 16) + (int) OpenGlHelper.lastBrightnessX);
             NametagRenderer.setDrawingIndicator(false);
         }
     }

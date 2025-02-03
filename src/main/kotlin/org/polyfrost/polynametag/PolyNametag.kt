@@ -28,8 +28,6 @@ object PolyNametag
 
     var isEssential = false
 
-    var drawingIndicator = false
-
     fun initialize() {
         PolyNametagConfig
     }
