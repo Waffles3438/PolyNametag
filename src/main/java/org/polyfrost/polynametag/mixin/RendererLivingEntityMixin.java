@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import org.polyfrost.polynametag.NametagRenderer;
 import org.polyfrost.polynametag.PolyNametag;
 import org.polyfrost.polynametag.PolyNametagConfig;
+import org.polyfrost.polynametag.render.GlHelperHook;
 import org.polyfrost.polynametag.render.NametagRenderingKt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -145,7 +146,7 @@ public abstract class RendererLivingEntityMixin  {
         }
 
         if (PolyNametag.INSTANCE.isEssential() && NametagRenderer.isDrawingIndicator()) {
-            NametagRenderer.INSTANCE.drawIndicator(entity, entity.getDisplayName().getFormattedText(), (((int) OpenGlHelper.lastBrightnessY) << 16) + (int) OpenGlHelper.lastBrightnessX);
+            NametagRenderer.INSTANCE.drawIndicator(entity, entity.getDisplayName().getFormattedText(), (((int) GlHelperHook.INSTANCE.getLastBrightnessY()) << 16) + (int) GlHelperHook.INSTANCE.getLastBrightnessX());
             NametagRenderer.setDrawingIndicator(false);
         }
     }
