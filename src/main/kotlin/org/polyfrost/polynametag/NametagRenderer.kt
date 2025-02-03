@@ -1,14 +1,13 @@
 package org.polyfrost.polynametag
 
 import gg.essential.universal.UMatrixStack
-import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import org.polyfrost.oneconfig.utils.v1.dsl.mc
-import org.polyfrost.polynametag.PolyNametag.drawingIndicator
 import org.polyfrost.polynametag.mixin.Accessor_FontRenderer_DrawString
+import org.polyfrost.polynametag.render.EssentialBSManager
 import org.polyfrost.polyui.unit.Vec2
 import org.polyfrost.universal.UGraphics
 import kotlin.math.cos
@@ -18,6 +17,9 @@ object NametagRenderer {
 
     private val points = arrayOf(Vec2(1f, 1f), Vec2(1f, -1f), Vec2(-1f, -1f), Vec2(-1f, 1f))
     private val translate = arrayOf(Vec2(1f, 0f), Vec2(0f, -1f), Vec2(-1f, 0f), Vec2(0f, 1f))
+
+    var isDrawingIndicator = false
+    private val essentialBSManager = EssentialBSManager()
 
     @JvmStatic
     fun drawStringWithoutZFighting(fontRenderer: FontRenderer, text: String, x: Float, y: Float, color: Int): Int {

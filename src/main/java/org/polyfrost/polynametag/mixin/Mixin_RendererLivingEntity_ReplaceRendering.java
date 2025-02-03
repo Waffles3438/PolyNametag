@@ -98,9 +98,7 @@ public class Mixin_RendererLivingEntity_ReplaceRendering<T extends EntityLivingB
             return y;
         }
 
-        float newY = y + PolyNametagConfig.INSTANCE.getHeightOffset();
-        System.out.println("New Y: " + newY);
-        return newY;
+        return y + PolyNametagConfig.INSTANCE.getHeightOffset();
     }
 
 }

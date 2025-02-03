@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -35,8 +36,8 @@ public class Mixin_OnlineIndicator_EssentialIndicatorCompatibility {
 
     @Dynamic("Essential")
     @Inject(method = "drawNametagIndicator", at = @At("HEAD"), cancellable = true)
-    private static void skip(UMatrixStack matrixStack, Entity entity, String str, int light, CallbackInfo ci) {
-        if (!PolyNametagConfig.INSTANCE.getEnabled() || !PolyNametag.INSTANCE.getDrawingIndicator()) {
+    private static void skip(UMatrixStack matrixStack, @Coerce Object entity, String str, int light, CallbackInfo ci) {
+        if (!PolyNametagConfig.INSTANCE.getEnabled() || !NametagRenderer.INSTANCE.isDrawingIndicator() ) {
             return;
         }
 
