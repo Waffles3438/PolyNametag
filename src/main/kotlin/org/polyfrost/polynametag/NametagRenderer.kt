@@ -1,15 +1,16 @@
 package org.polyfrost.polynametag
 
+import dev.deftu.omnicore.client.render.OmniRenderState
 import gg.essential.universal.UMatrixStack
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11
 import org.polyfrost.oneconfig.utils.v1.dsl.mc
 import org.polyfrost.polynametag.mixin.Accessor_FontRenderer_DrawString
 import org.polyfrost.polynametag.render.EssentialBSManager
 import org.polyfrost.polyui.unit.Vec2
-import org.polyfrost.universal.UGraphics
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -27,13 +28,13 @@ object NametagRenderer {
             return 0
         }
 
-        UGraphics.GL.pushMatrix()
+        GlStateManager.pushMatrix()
         return when (PolyNametagConfig.textType) { //TODO FULL SHADOW
             0 -> fontRenderer.invokeRenderString(text, x, y, color, false)
             1 -> fontRenderer.invokeRenderString(text, x, y, color, true)
             else -> 0
         }.apply {
-            UGraphics.GL.popMatrix()
+            GlStateManager.popMatrix()
         }
     }
 
@@ -49,7 +50,7 @@ object NametagRenderer {
         }
 
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        UGraphics.disableTexture2D()
+        OmniRenderState.disableTexture2D()
         GL11.glPushMatrix()
         val realX1 = x1 - if (canDrawEssentialIndicator(entity)) 10 else 0
         GL11.glTranslated((realX1 + x2) / 2f, 3.5, 0.0)
@@ -80,7 +81,7 @@ object NametagRenderer {
 
         GL11.glEnd()
         GL11.glPopMatrix()
-        UGraphics.enableTexture2D()
+        OmniRenderState.enableTexture2D()
         GL11.glColor4f(1f, 1f, 1f, 1f)
         GL11.glDisable(GL11.GL_LINE_SMOOTH)
     }

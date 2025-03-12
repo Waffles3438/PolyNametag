@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 //$$ import net.fabricmc.api.ClientModInitializer
 //#endif
 
-import org.polyfrost.oneconfig.api.platform.v1.Platform
+import dev.deftu.omnicore.common.OmniLoader
 
 //#if FORGE
 @Mod(modid = PolyNametag.ID, version = PolyNametag.VERSION, name = PolyNametag.NAME, modLanguageAdapter = "org.polyfrost.oneconfig.utils.v1.forge.KotlinLanguageAdapter")
@@ -33,9 +33,8 @@ object PolyNametag
     }
 
     fun postInitialize() {
-        val loaderPlatform = Platform.loader()
-        isEssential = loaderPlatform.isModLoaded("essential") && !loaderPlatform.isModLoaded("notsoessential")
-        isPatcher = loaderPlatform.isModLoaded("patcher")
+        isEssential = OmniLoader.isModLoaded("essential") && !OmniLoader.isModLoaded("notsoessential")
+        isPatcher = OmniLoader.isModLoaded("patcher")
     }
 
     //#if FORGE
