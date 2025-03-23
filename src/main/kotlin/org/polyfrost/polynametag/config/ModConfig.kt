@@ -62,6 +62,9 @@ object ModConfig : Config(Mod("Nametags", ModType.UTIL_QOL, "/polynametag.svg"),
     @Color(name = "Background color", description = "The color of the background")
     var backgroundColor = OneColor(0, 0, 0, 63)
 
+    @Switch(name = "Show nametags through walls", description = "Backports nametag rendering from modern where nametags render through walls")
+    var nametagsThroughWalls = false
+
     @Switch(name = "Offset Essential Indicator", description = "Offset nametag to center if the player has essential indicator drawn")
     var essentialOffset = true
 
